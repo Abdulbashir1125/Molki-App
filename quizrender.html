@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App</title>
+  </head>
+  <body>
+    <h2 style="text-align: center">ArBi - Quiz</h2>
+
+    <div
+      class="qna"
+      style="
+        text-align: center;
+        width: 50%;
+        margin: 0 auto;
+        border: 1px solid rgb(0, 0, 0);
+        border-radius: 20px;
+      "
+    >
+      <strong>Start Game?</strong>
+    </div>
+    <p style="text-align: center" class="result"><strong>Result</strong></p>
+    <p style="text-align: center">
+      <button class="next">Next Question</button>
+    </p>
+    <script>
+      let qAsked = [];
+      let currentQ;
+      let currentA;
+
+      const Question = [
+        {
+          id: 1,
+          Question: "What is a Noun",
+          ans: "b",
+        },
+
+        {
+          id: 3,
+          Question: "What is an Adjective",
+          ans: "c",
+        },
+        {
+          id: 2,
+          Question: "What is a Verb",
+          ans: "a",
+        },
+      ];
+
+      const answer = [
+        {
+          qid: 1,
+          id: 1,
+          q1: "a",
+          q2: "b",
+          q3: "c",
+        },
+        {
+          qid: 2,
+          id: 2,
+          q1: "a",
+          q2: "b",
+          q3: "c",
+        },
+        {
+          qid: 3,
+          id: 3,
+          q1: "a",
+          q2: "b",
+          q3: "c",
+        },
+      ];
+
+      //seting up dynamic questions
+      let QuestionCovered = [];
+      let noOfQuestions = Question.length - 1;
+
+      //the end of the arilae
+
+      function generateNoRepeat() {
+        return Math.round(Math.random() * noOfQuestions);
+      }
+      function render(select) {
+        console.log(select);
+        let current = Question[select];
+        let Q = Question[select];
+
+        let id = Q.id;
+
+        answer.forEach((item) => {
+          if (id === item.qid) {
+            currentA = item;
+            currentQ = Q;
+          }
+        });
+
+        function result(ans) {
+          document.querySelector(".result").innerHTML = ans;
+        }
+        console.log(currentQ, currentA);
+
+        //display the question
+        function renderOnPage(currentQ, currentA) {
+          document.querySelector(".qna").innerHTML = `
+                                 <p>${currentQ.Question} ?</p>
+                              <button class='ans' qid='${currentQ.id}'>${currentA.q1}</button>
+                              <p><button class='ans' qid='${currentQ.id}'>${currentA.q2}</button></p>
+                              <p><button class='ans' qid='${currentQ.id}'>${currentA.q3}</button></p>
+
+                              `;
+        }
+
+        renderOnPage(currentQ, currentA);
+
+        document.querySelectorAll(".ans").forEach((each) => {
+          let res;
+          each.onclick = (btn) => {
+            const Qid = Number(each.getAttribute("qid"));
+            const ansPick = each.innerHTML;
+
+            console.log(Qid, ansPick);
+            let qobj;
+            let aobj;
+
+            //getting the question object
+            Question.forEach((et) => {
+              if (Qid === et.id) {
+                qobj = et;
+              }
+            });
+
+            //getting the answes for the questions
+            answer.forEach((each) => {
+              if (qobj.id === each.qid) {
+                aobj = each;
+              }
+            });
+
+            //checking the accuracy of our answers
+            if (ansPick === qobj.ans) {
+              res = "Your Answer is Correct 👍";
+            } else {
+              res = "your answer is wrong 😒";
+            }
+
+            result(res);
+          };
+        });
+
+        // QuestionCovered.push(select);
+      }
+
+      //   render();
+
+      function we() {
+        let sel;
+        if (QuestionCovered.length >= Question.length) {
+          sel = undefined;
+        } else {
+          while (true) {
+            sel = generateNoRepeat();
+            if (!QuestionCovered.includes(sel)) {
+              if (QuestionCovered.length === Question.length) {
+                return;
+              } else {
+                return sel;
+              }
+            }
+          }
+        }
+      }
+      document.querySelector(".next").onclick = () => {
+        let status = we();
+        let str;
+        if (status !== undefined) {
+          render(status);
+          QuestionCovered.push(status);
+        } else {
+          str = "questions exceeded";
+          console.log(str);
+        }
+
+        document.querySelector(".result").innerHTML = "";
+        if (str === "questions exceeded") {
+          document.querySelector(".qna").innerHTML = `
+                  <p class=""><marquee>Game-Over 😁😁</marquee></p>
+            `;
+        }
+      };
+
+      // function test() {
+      //   let randomindex;
+      //   let selectobj;
+      //   while (true) {
+      //     randomindex = generateNoRepeat();
+      //     if (!qv.includes(randomindex)) {
+      //       return randomindex;
+      //     }
+      //   }
+      // }
+
+      // console.log(test());
+    </script>
+  </body>
+</html>
