@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App</title>
+  </head>
+  <body>
+    <h2 style="text-align: center">ArBi - Quiz</h2>
+
+    <div
+      class="qna"
+      style="
+        text-align: center;
+        width: 50%;
+        margin: 0 auto;
+        border: 1px solid rgb(0, 0, 0);
+        border-radius: 20px;
+      "
+    >
+      <strong>Start Game?</strong>
+    </div>
+    <p style="text-align: center" class="result"><strong>Result</strong></p>
+    <p style="text-align: center">
+      <p class="score"></p>
+     </p>
+ 
+     <p style="text-align: center">     <button class="next">Start/Retry</button></p>
+     <span style="text-align: center" class="score" ></span>
+    <script>
+      let qAsked = [];
+      let currentQ;
+      let currentA;
+      let score = 0;
+      let answered = false;
+
+      const Question = [
+        {
+          id: 1,
+          Question: "What is a Noun",
+          ans: "q1",
+        },
+
+        {
+          id: 3,
+          Question: "What is an Adjective",
+          ans: "q3",
+        },
+        {
+          id: 2,
+          Question: "What is a Verb",
+          ans: "q1",
+        },
+        {
+          id: 4,
+          Question: "Who is AUB",
+          ans: "q2",
+        },
+        {
+          id: 5,
+          Question: "Who is the current emir of Gombe State",
+          ans: "q3",
+        },
+        {
+          id: 6,
+          Question: "What system of Government of Nigeria Practicing",
+          ans: "q2",
+        },
+      ];
+
+      const answer = [
+        {
+          qid: 1,
+          id: 1,
+          q1: "name of anything",
+          q2: "african continent",
+          q3: "just a word",
+        },
+        {
+          qid: 5,
+          id: 5,
+          q1: "Ko Gezau",
+          q2: "Mai mala buni",
+          q3: "HRH: Abubakar Shehu Abubakar",
+        },
+        {
+          qid: 6,
+          id: 6,
+          q1: "one whole state",
+          q2: "Democracy",
+          q3: "Monarchy",
+        },
+        {
+          qid: 2,
+          id: 2,
+          q1: "action word",
+          q2: "modifiers of noun",
+          q3: "doing things which makes us strong",
+        },
+        {
+          qid: 3,
+          id: 3,
+          q1: "adjective is an adjective",
+          q2: "basicaly a part of speech",
+          q3: "modifier of noun",
+        },
+        {
+          qid: 4,
+          id: 4,
+          q1: "baby boy in australia",
+          q2: "just a man, with vision and determination",
+          q3: "a Company name",
+        },
+      ];
+
+      //seting up dynamic questions
+      let QuestionCovered = [];
+      let noOfQuestions = Question.length - 1;
+
+      //the end of the arilae
+
+      function generateNoRepeat() {
+        return Math.round(Math.random() * noOfQuestions);
+      }
+      function render(select) {
+        console.log(select);
+        let current = Question[select];
+        let Q = Question[select];
+
+        let id = Q.id;
+
+        answer.forEach((item) => {
+          if (id === item.qid) {
+            currentA = item;
+            currentQ = Q;
+          }
+        });
+
+        function result(ans) {
+          document.querySelector(".result").innerHTML = ans;
+        }
+        console.log(currentQ, currentA);
+
+        //display the question
+        function renderOnPage(currentQ, currentA) {
+          document.querySelector(".qna").innerHTML = `
+                                 <p>${currentQ.Question} ?</p>
+                              <button class='ans' qid='${currentQ.id}'>${currentA.q1}</button>
+                              <p><button class='ans' qid='${currentQ.id}'>${currentA.q2}</button></p>
+                              <p><button class='ans' qid='${currentQ.id}'>${currentA.q3}</button></p>
+
+                              `;
+        }
+
+        renderOnPage(currentQ, currentA);
+
+        document.querySelectorAll(".ans").forEach((each) => {
+          let res;
+          each.onclick = (btn) => {
+            const Qid = Number(each.getAttribute("qid"));
+            const ansPick = each.innerHTML;
+
+            console.log(Qid, ansPick);
+            let qobj;
+            let aobj;
+
+            //getting the question object
+            Question.forEach((et) => {
+              if (Qid === et.id) {
+                qobj = et;
+              }
+            });
+
+            //getting the answes for the questions
+            answer.forEach((each) => {
+              if (qobj.id === each.qid) {
+                aobj = each;
+              }
+            });
+
+            //checking the accuracy of our answers
+            console.log(ansPick, qobj.ans, aobj[qobj.ans]);
+            if (ansPick === aobj[qobj.ans]) {
+              res = "Your Answer is Correct 👍";
+              score += 1;
+            } else {
+              res = "your answer is wrong 😒";
+              score += 0;
+            }
+
+            result(res);
+
+            setTimeout(() => {
+              next();
+            }, 1000);
+          };
+        });
+
+        // QuestionCovered.push(select);
+      }
+
+      //   render();
+
+      function we() {
+        let sel;
+        if (QuestionCovered.length >= Question.length) {
+          sel = undefined;
+        } else {
+          while (true) {
+            sel = generateNoRepeat();
+            if (!QuestionCovered.includes(sel)) {
+              if (QuestionCovered.length === Question.length) {
+                return;
+              } else {
+                return sel;
+              }
+            }
+          }
+        }
+      }
+      function next() {
+        let status = we();
+        let str;
+        if (status !== undefined) {
+          render(status);
+          QuestionCovered.push(status);
+        } else {
+          str = "questions exceeded";
+
+          console.log(str);
+          document.querySelector('.score').innerHTML = `Your Final Score is: , ${score}`
+        answered = true;
+        }
+
+        document.querySelector(".result").innerHTML = "";
+        if (str === "questions exceeded") {
+          document.querySelector(".qna").innerHTML = `
+                  <p class=""><marquee>Game-Over 😁😁</marquee></p>
+            `;
+        }
+      }
+      document.querySelector(".next").onclick = () => {
+if(answered){
+  location.reload();
+}else{
+  next();
+}
+    
+      };
+
+      // function test() {
+      //   let randomindex;
+      //   let selectobj;
+      //   while (true) {
+      //     randomindex = generateNoRepeat();
+      //     if (!qv.includes(randomindex)) {
+      //       return randomindex;
+      //     }
+      //   }
+      // }
+
+      // console.log(test());
+    </script>
+  </body>
+</html>
