@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .final {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        /* background-color: aqua; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .mother {
+        width: fit-content;
+        background-color: rgb(136, 168, 80);
+        color: aliceblue;
+        font-weight: bold;
+        padding: 20px;
+        text-align: center;
+        transition: 1000ms 100ms ease-in;
+        border-radius: 50px;
+        box-shadow: 5px 1px 10px inset rgb(218, 214, 214);
+      }
+      .mother:hover {
+        background-color: rgb(54, 181, 37);
+        padding: 50px;
+        font-size: larger;
+      }
+      #container button {
+        border: none;
+        /* font-size: large; */
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="final">
+      <div class="mother">
+        <h2>GEO-AFRICAN QUIZ</h2>
+        <div id="container"></div>
+        <p id="show"></p>
+        <button id="resett">Reset</button>
+      </div>
+    </div>
+
+    <script>
+      const container = document.getElementById("container");
+      const Question = [
+        {
+          id: 1,
+          Question: "What is a Noun",
+          ans: "q1",
+        },
+
+        {
+          id: 3,
+          Question: "What is an Adjective",
+          ans: "q3",
+        },
+        {
+          id: 2,
+          Question: "What is a Verb",
+          ans: "q1",
+        },
+        {
+          id: 4,
+          Question: "Who is AUB",
+          ans: "q2",
+        },
+        {
+          id: 5,
+          Question: "Who is the current emir of Gombe State",
+          ans: "q3",
+        },
+        {
+          id: 6,
+          Question: "What system of Government of Nigeria Practicing",
+          ans: "q2",
+        },
+      ];
+
+      const answer = [
+        {
+          qid: 1,
+          id: 1,
+          q1: "name of anything",
+          q2: "african continent",
+          q3: "just a word",
+        },
+        {
+          qid: 5,
+          id: 5,
+          q1: "Ko Gezau",
+          q2: "Mai mala buni",
+          q3: "HRH: Abubakar Shehu Abubakar",
+        },
+        {
+          qid: 6,
+          id: 6,
+          q1: "one whole state",
+          q2: "Democracy",
+          q3: "Monarchy",
+        },
+        {
+          qid: 2,
+          id: 2,
+          q1: "action word",
+          q2: "modifiers of noun",
+          q3: "doing things which makes us strong",
+        },
+        {
+          qid: 3,
+          id: 3,
+          q1: "adjective is an adjective",
+          q2: "basicaly a part of speech",
+          q3: "modifier of noun",
+        },
+        {
+          qid: 4,
+          id: 4,
+          q1: "baby boy in australia",
+          q2: "just a man, with vision and determination",
+          q3: "a Company name",
+        },
+      ];
+      let score = JSON.parse(localStorage.getItem("score")) || 0;
+      let QuestionCovered = [];
+      function randNumber() {
+        if (QuestionCovered.length === Question.length) {
+          return undefined;
+        } else {
+          while (true) {
+            let rand = Math.floor(Math.random() * Question.length);
+            if (!QuestionCovered.includes(rand)) {
+              return rand;
+            }
+          }
+        }
+      }
+      function show(tex) {
+        document.getElementById("show").innerText = tex;
+      }
+      function generateQyestion() {
+        let currentQuestion = randNumber();
+        let ty = typeof currentQuestion;
+        console.log(typeof currentQuestion);
+        if (currentQuestion == 0 || ty == "number") {
+          let questionHtml = "";
+          for (let a of Question) {
+            if (Question.indexOf(a) === currentQuestion) {
+              questionHtml = a;
+            }
+          }
+
+          generateAnswers(questionHtml);
+          QuestionCovered.push(currentQuestion);
+          console.log(QuestionCovered);
+
+          document.querySelectorAll(".btnAns").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const Qid = btn.dataset.questionid;
+              const ans = btn.innerText;
+              let fullQuestion;
+              let fullanswers;
+
+              for (let a of Question) {
+                if (a.id == Qid) {
+                  fullQuestion = a;
+                }
+              }
+              //   getting answers
+              for (let a of answer) {
+                if (a.qid == Qid) {
+                  fullanswers = a;
+                }
+              }
+              if (fullanswers[fullQuestion.ans] === ans) {
+                score += 1;
+                localStorage.setItem("score", JSON.stringify(score));
+                wow = `your answer is CORRECT 👍😍: Total score: ${score}`;
+                show(wow);
+              } else {
+                wow = `your answer is WRONG 😒😒: Total score: ${score}`;
+                show(wow);
+                // console.log(score);
+              }
+              generateQyestion();
+            });
+          });
+        } else {
+          setTimeout(() => {
+            alert("non questions available");
+            location.reload();
+          }, 500);
+        }
+      }
+
+      function generateAnswers(question) {
+        let answerHtml = "";
+        let questionHtml2 = question;
+        const questionId = question.id;
+        for (let a of answer) {
+          if (questionId === a.qid) {
+            answerHtml = a;
+          }
+        }
+        console.log(questionHtml2, answerHtml);
+        container.innerHTML = `
+              <div class="qNa">
+            <h3>${questionHtml2.Question}?</h3>
+            <p>
+            <button class='btnAns' data-questionId=${questionHtml2.id}
+           
+            >${answerHtml.q1}</button></p>
+            <p>
+            <button class='btnAns' data-questionId=${questionHtml2.id}>${answerHtml.q2}</button></p>
+            <p>
+            <button class='btnAns' data-questionId=${questionHtml2.id}>${answerHtml.q3}</button></p>
+           
+            
+          </div>
+            `;
+        document.getElementById("resett").addEventListener("click", () => {
+          const wiz = 0;
+          score = wiz;
+          localStorage.setItem("score", JSON.stringify(score));
+          location.reload();
+          // console.log(score, localStorage.getItem("score"));
+        });
+      }
+
+      generateQyestion();
+    </script>
+  </body>
+</html>
